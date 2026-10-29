@@ -1,0 +1,22 @@
+{
+  "name": "devworkspace-pro",
+  "version": "1.6.4",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "build:js": "esbuild frontend/app.ts --bundle=false --format=esm --target=es2017 --outfile=frontend/main.js",
+    "build": "npm run typecheck && npm run build:js && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "backend": "npm --prefix backend start"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}

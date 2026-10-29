@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1117" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' data: https://cdnjs.cloudflare.com; connect-src 'self' https: wss:; img-src 'self' data: blob:; worker-src 'self' blob: https://cdnjs.cloudflare.com; child-src blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="DevWorkspace Pro — a browser-based coding workspace." />
+  <title>DevWorkspace Pro</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="frontend/style.css" />
+  
+  
+
+  
+  <meta name="theme-color" content="#0d1117">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-button mobile-only" id="menuToggle" aria-label="Toggle explorer"><i class="fa-solid fa-bars"></i></button>
+      <div class="brand"><span class="brand-mark"><i class="fa-solid fa-code"></i></span><span>DevWorkspace <b>Pro</b></span></div>
+      <div class="project-label" id="projectLabel">untitled-project</div>
+      <div class="top-actions">
+        <button class="button secondary" id="authBtn" title="Sign in or create account"><i class="fa-regular fa-user"></i><span id="authBtnLabel" data-i18n="signIn">Sign in</span></button>
+        <button class="button secondary" id="connectServerBtn" title="Connect to a DevWorkspace backend"><i class="fa-solid fa-cloud"></i><span data-i18n="connect">Connect</span></button>
+        <button class="button secondary" id="projectsBtn" title="Open or create cloud projects"><i class="fa-solid fa-folder-tree"></i><span data-i18n="projectsBtn">Projects</span></button>
+        <button class="button secondary" id="newFileBtn"><i class="fa-regular fa-file"></i><span data-i18n="newFile">New file</span></button>
+        <button class="button secondary" id="saveBtn"><i class="fa-solid fa-floppy-disk"></i><span data-i18n="save">Save</span></button>
+        <button class="button secondary" id="formatBtn" title="Format code"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Format</span></button>
+        <button class="button primary" id="runBtn"><i class="fa-solid fa-play"></i><span data-i18n="run">Run</span></button>
+        <button class="button secondary" id="previewBtn"><i class="fa-regular fa-eye"></i><span data-i18n="preview">Preview</span></button>
+        <button class="button secondary" id="terminalBtn" title="Terminal (Node.js / Python)"><i class="fa-solid fa-terminal"></i><span>Terminal</span></button>
+        <select id="langSelect" class="lang-select" title="Language / Harshe / \u0627\u0644\u0644\u063a\u0629"><option value="en">EN</option><option value="ha">HA</option><option value="ar">\u0639</option></select><button class="icon-button" id="installBtn" title="Install app" hidden><i class="fa-solid fa-download"></i></button>
+        <button class="icon-button" id="settingsBtn" title="Settings"><i class="fa-solid fa-gear"></i></button><button class="icon-button" id="themeBtn" title="Toggle theme"><i class="fa-regular fa-sun"></i></button>
+      </div>
+    </header>
+    <div class="workspace">
+      <nav class="activitybar" aria-label="Workspace views">
+        <button class="activity active" title="Explorer" data-view="explorer"><i class="fa-regular fa-folder-open"></i></button>
+        <button class="activity" title="Search" data-view="search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button class="activity" title="Source Control" data-view="git"><i class="fa-solid fa-code-branch"></i></button>
+        <button class="activity" title="Run and Debug" data-view="run"><i class="fa-solid fa-bug"></i></button>
+        <div class="activity-spacer"></div>
+        <button class="activity" id="aboutBtn" title="About"><i class="fa-regular fa-circle-user"></i></button>
+      </nav>
+      <div class="sidebar-overlay" id="sidebarOverlay" hidden></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-heading"><span id="sidebarTitle" data-i18n="explorer">EXPLORER</span><div><button class="tiny-icon" id="addFileBtn" title="New file"><i class="fa-regular fa-file"></i></button><button class="tiny-icon" id="newFolderBtn" title="New folder"><i class="fa-solid fa-folder-plus"></i></button><button class="tiny-icon" id="newProjectBtn" title="New project"><i class="fa-solid fa-folder-tree"></i></button><button class="tiny-icon" id="importBtn" title="Import ZIP"><i class="fa-solid fa-file-import"></i></button></div></div>
+        <div class="project-heading"><i class="fa-solid fa-chevron-down"></i><span id="treeProjectName">UNTITLED-PROJECT</span><button class="tiny-icon" id="exportBtn" title="Export project"><i class="fa-solid fa-download"></i></button></div>
+        <div id="fileTree" class="file-tree"></div>
+        <div class="sidebar-bottom" id="connectionStatus"><span class="connection-dot"></span><span data-i18n="local">Local workspace</span><span class="local-label">LOCAL</span></div>
+      </aside>
+      <main class="main-area">
+        <div class="tabs" id="tabs"><div class="empty-tab">Welcome</div></div>
+        <div class="editor-wrap"><div id="editor"></div><div id="editorEmpty" class="editor-empty"><div class="empty-logo"><i class="fa-solid fa-code"></i></div><h2>DevWorkspace Pro</h2><p data-i18n="selectFile">Select a file or create one to start coding.</p><div class="shortcut-list"><span><kbd>Ctrl</kbd> + <kbd>S</kbd> Save file</span><span><kbd>Ctrl</kbd> + <kbd>Enter</kbd> Run / preview</span></div></div></div>
+        <section class="bottom-panel" id="bottomPanel">
+          <div class="panel-heading"><div class="panel-tabs"><button class="panel-tab active" data-panel="output" data-i18n="panel_output">OUTPUT</button><button class="panel-tab" data-panel="problems">PROBLEMS <span class="count" id="problemCount">0</span></button><button class="panel-tab" data-panel="terminal" data-i18n="panel_terminal">TERMINAL</button>
+      <button class="panel-tab" data-panel="versions" data-i18n="panel_versions">VERSIONS <span class="count" id="versionCount">0</span></button>
+      <button class="panel-tab" data-panel="ai" data-i18n="panel_ai">AI <i class="fa-solid fa-sparkles"></i></button></div><button class="tiny-icon" id="hidePanelBtn" title="Hide panel"><i class="fa-solid fa-chevron-down"></i></button></div>
+          <div class="panel-content" id="panelContent"><div class="log-line"><span class="log-time">READY</span> DevWorkspace Pro frontend started.</div><div class="log-line muted">Note: terminal/runtime and Git backend are not connected in this starter build.</div></div>
+        </section>
+        <section class="terminal-pane hidden" id="terminalPane"><div class="terminal-heading"><strong><i class="fa-solid fa-terminal"></i> Terminal</strong><button class="tiny-icon" id="closeTerminalBtn"><i class="fa-solid fa-xmark"></i></button></div><div class="terminal-out" id="termOut"></div><div class="terminal-input-row"><span class="term-prompt">$</span><input id="termIn" class="terminal-input" spellcheck="false" autocomplete="off" placeholder='help | ls | node server.js | python main.py | stop' /></div></section>
+        <footer class="statusbar"><span><i class="fa-solid fa-code-branch"></i> main</span><span id="dirtyStatus">Saved locally</span><span class="status-spacer"></span><span id="cursorStatus">Ln 1, Col 1</span><span id="languageStatus">Plain Text</span><span id="encodingStatus">UTF-8</span></footer>
+      </main>
+      <aside class="preview-pane hidden" id="previewPane"><div class="preview-heading"><strong><i class="fa-regular fa-eye"></i> Preview</strong><button class="tiny-icon" id="closePreviewBtn"><i class="fa-solid fa-xmark"></i></button></div><div class="preview-toolbar">
+        <button class="icon-button" id="refreshPreviewBtn" title="Refresh preview"><i class="fa-solid fa-rotate"></i></button>
+        <button class="icon-button open-browser-btn" id="openChromePreviewBtn" title="Open preview in a new Chrome tab" aria-label="Open preview in a new Chrome tab"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+        <select id="deviceSelect" class="device-select" title="Device frame">
+          <option value="100%">Desktop</option>
+          <option value="375">iPhone SE</option>
+          <option value="390">iPhone 14</option>
+          <option value="412">Pixel 7</option>
+        </select>
+        <label class="auto-refresh-label"><input id="autoRefreshChk" type="checkbox" checked /> Auto-refresh</label>
+      </div>
+      <iframe id="previewFrame" title="Project preview" sandbox="allow-scripts allow-forms" class="preview-frame device-desktop"></iframe></aside>
+    </div>
+  </div>
+  <input type="file" id="zipInput" accept=".zip,application/zip" hidden />
+  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+  <dialog id="authDialog" class="dialog"><form id="authForm"><div class="dialog-title">DevWorkspace Pro account</div><p id="authHelp">Sign in to access your private server workspace.</p><label for="authEmail">Email</label><input id="authEmail" class="text-input" type="email" autocomplete="email" required /><label for="authPassword">Password</label><input id="authPassword" class="text-input" type="password" autocomplete="current-password" minlength="8" required /><p id="authMessage" role="status"></p><div class="dialog-actions"><button type="button" class="button secondary" id="authModeBtn">Create account</button><button type="button" class="button secondary" id="authCancelBtn">Cancel</button><button type="submit" class="button primary" id="authSubmitBtn">Sign in</button></div><button type="button" class="button secondary hidden" id="authLogoutBtn">Sign out</button></form></dialog>
+  <dialog id="newFileDialog" class="dialog"><form method="dialog" id="newFileForm"><div class="dialog-title">Create file</div><label for="fileNameInput">File name</label><input id="fileNameInput" class="text-input" placeholder="index.html" required maxlength="120" /><div class="dialog-actions"><button type="button" class="button secondary" id="cancelFileBtn">Cancel</button><button class="button primary" id="createFileConfirm" value="default">Create file</button></div></form></dialog>
+  <dialog id="searchDialog" class="dialog"><form method="dialog"><div class="dialog-title">Search files</div><label for="searchInput">Find text in project</label><input id="searchInput" class="text-input" placeholder="Search code…" /><div id="searchResults" class="search-results"></div><div class="dialog-actions"><button class="button secondary">Close</button></div></form></dialog>
+  <dialog id="aboutDialog" class="dialog"><form method="dialog"><div class="dialog-title">About DevWorkspace Pro</div><p>This is Milestone 1: a browser IDE foundation with local file editing, autosave, preview, and ZIP import/export.</p><p class="notice">A real shell terminal, server-side runtime, remote filesystem, and Git push/pull require a secured backend and are not implemented in this frontend-only milestone.</p><div class="dialog-actions"><button class="button primary">Got it</button></div></form></dialog>
+  <dialog class="dialog" id="settingsDialog">
+  <form method="dialog">
+    <div class="dialog-title" data-i18n="settings">Settings</div>
+    <div class="settings-tabs">
+      <button type="button" class="settings-tab active" data-pane="paneGeneral" data-i18n="general">General</button>
+      <button type="button" class="settings-tab" data-pane="paneShortcuts" data-i18n="tabShortcuts">Shortcuts</button>
+      <button type="button" class="settings-tab" data-pane="paneAbout" data-i18n="tabAbout">About</button>
+      <button type="button" class="settings-tab" data-pane="paneUrl" data-i18n="tabUrl">Browser link</button>
+    </div>
+    <div class="settings-pane" id="paneGeneral">
+    <div class="settings-group">
+      <div class="settings-group-title" data-i18n="grpAppearance">Appearance</div>
+      <div class="setting-row"><label data-i18n="lblTheme">Theme</label>
+        <select id="themeSelect" class="text-input">
+          <option value="dark" data-i18n="themeDark">Dark</option>
+          <option value="light" data-i18n="themeLight">Light</option>
+          <option value="system" data-i18n="themeSystem">System</option>
+        </select></div>
+      <div class="setting-row"><label data-i18n="lblLanguage">Language</label>
+        <select id="settingsLangSelect" class="text-input">
+          <option value="en">English</option><option value="ha">Hausa</option><option value="ar">العربية</option>
+        </select></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title" data-i18n="grpEditor">Editor</div>
+      <div class="setting-row"><label data-i18n="lblFontSize">Font size</label><input id="fontSizeInput" type="number" min="10" max="28" class="text-input" /></div>
+      <div class="setting-row"><label data-i18n="lblFontFamily">Font family</label>
+        <select id="fontFamilyInput" class="text-input">
+          <option value='"Fira Code", Consolas, monospace'>Fira Code</option>
+          <option value="Consolas, Monaco, monospace">Consolas</option>
+          <option value="Monaco, Menlo, monospace">Monaco</option>
+          <option value="Cascadia Code, monospace">Cascadia Code</option>
+          <option value="monospace">Monospace</option>
+        </select></div>
+      <div class="setting-row"><label data-i18n="lblTabSize">Tab size</label>
+        <select id="tabSizeInput" class="text-input"><option value="2">2</option><option value="4">4</option><option value="8">8</option></select></div>
+      <div class="setting-row"><label data-i18n="lblWordWrap">Word wrap</label><input id="wrapChk" type="checkbox" /></div>
+      <div class="setting-row"><label data-i18n="lblMinimap">Minimap</label><input id="minimapChk" type="checkbox" /></div>
+      <div class="setting-row"><label data-i18n="lblLineNumbers">Line numbers</label><input id="lineNumbersChk" type="checkbox" /></div>
+      <div class="setting-row"><label data-i18n="lblAutoSave">Auto-save changes</label><input id="autoSaveChk" type="checkbox" /></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title" data-i18n="grpAI">AI Assistant</div>
+      <div class="setting-row"><label data-i18n="lblEndpoint">API endpoint</label><input id="aiEndpointInput" class="text-input" placeholder="https://api.openai.com/v1" /></div>
+      <div class="setting-row"><label data-i18n="lblModel">Model</label><input id="aiModelInput" class="text-input" placeholder="gpt-4o-mini" /></div>
+      <div class="setting-row"><label data-i18n="lblApiKey">API key (stored locally)</label><input id="aiKeyInput" type="password" class="text-input" placeholder="sk-..." /></div>
+    </div>
+    <div class="settings-group settings-danger">
+      <div class="settings-group-title" data-i18n="grpDanger">Danger zone</div>
+      <div class="setting-row"><label data-i18n="lblReset">Reset workspace</label>
+        <button type="button" id="resetWorkspaceBtn" class="button danger" data-i18n="btnReset">Reset everything</button></div>
+    </div>
+    </div>
+    <div class="settings-pane" id="paneShortcuts" hidden>
+      <div class="shortcut-row"><kbd>Ctrl</kbd><span>+</span><kbd>S</kbd><span data-i18n="kSave">Save file</span></div>
+      <div class="shortcut-row"><kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd><span data-i18n="kRun">Run / preview</span></div>
+      <div class="shortcut-row"><kbd>Esc</kbd><span data-i18n="kEsc">Close sidebar (mobile)</span></div>
+      <div class="shortcut-row"><kbd>Ctrl</kbd><span>+</span><kbd>P</kbd><span data-i18n="kQuick">Quick open file</span></div>
+      <div class="shortcut-row"><kbd>Tab</kbd><span data-i18n="kEmmet">Emmet: expand (HTML)</span></div>
+      <p class="shortcut-note">Mac: use &#8984; instead of Ctrl</p>
+    </div>
+    <div class="settings-pane" id="paneAbout" hidden>
+      <div class="about-box">
+        <div class="about-logo">&#9000;&#65039; DevWorkspace-<b>Pro</b></div>
+        <div class="about-version">v1.6.4</div>
+        <p data-i18n="aboutDesc">A browser-based workspace: multi-project file explorer, Monaco editor, live preview, ZIP import/export and cloud sync.</p>
+        <div class="about-tech">Monaco Editor &middot; JSZip &middot; Supabase &middot; Vite</div>
+      </div>
+    </div>
+    <div class="settings-pane" id="paneUrl" hidden>
+      <div class="settings-group">
+        <div class="setting-row"><label data-i18n="lblSyncUrl">Sync URL with workspace</label><input id="syncUrlChk" type="checkbox" /></div>
+        <p class="settings-note" data-i18n="syncUrlDesc">The browser address bar follows the open project and file. Links open the workspace directly.</p>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title" data-i18n="currentLink">Current link</div>
+        <div class="link-row">
+          <input id="currentLinkInput" class="text-input" readonly />
+          <button type="button" class="button primary" id="copyLinkBtn" data-i18n="btnCopy">Copy</button>
+        </div>
+      </div>
+    </div>
+    <div class="dialog-actions"><button type="button" class="button secondary" id="closeSettingsBtn" data-i18n="btnClose">Close</button></div>
+  </form>
+</dialog>
+
+<dialog class="dialog" id="quickOpenDialog">
+  <form>
+    <input id="quickOpenInput" class="text-input" data-i18n-ph="quickOpenPh" placeholder="Type a file name... (Ctrl+P)" autocomplete="off" />
+    <div id="quickOpenList" class="quick-list"></div>
+  </form>
+</dialog>
+
+<dialog class="dialog" id="diffDialog">
+  <form method="dialog">
+    <div class="dialog-title" data-i18n="changesTitle">Changes vs current</div>
+    <pre id="diffOutput" class="diff-output"></pre>
+    <div class="dialog-actions"><button type="button" class="button secondary" id="closeDiffBtn" data-i18n="btnClose">Close</button></div>
+  </form>
+</dialog>
+
+<div class="drop-overlay" id="dropOverlay"><div>\ud83d\udce6 Drop ZIP/JSON to import project</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-html.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.js"></script>
+<script type="module" src="./frontend/main.js"></script>
+</body>
+</html>
